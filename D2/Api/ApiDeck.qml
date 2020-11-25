@@ -20,8 +20,10 @@ Item {
   AppProperty { id: propRemixer;       path: "app.traktor.decks." + (deckId+1) + ".content.remixer" }
   AppProperty { id: propKey;           path: "app.traktor.decks." + (deckId+1) + ".content.musical_key" }
   AppProperty { id: propKeyText;       path: "app.traktor.decks." + (deckId+1) + ".content.legacy_key" }
+  AppProperty { id: propGridOffset;    path: "app.traktor.decks." + (deckId+1) + ".content.grid_offset" }
   AppProperty { id: propTrackLength;   path: "app.traktor.decks." + (deckId+1) + ".track.content.track_length" }
   AppProperty { id: propElapsedTime;   path: "app.traktor.decks." + (deckId+1) + ".track.player.elapsed_time" }
+  AppProperty { id: propNextCuePoint;  path: "app.traktor.decks." + (deckId+1) + ".track.player.next_cue_point" }
   AppProperty { id: propBpm;           path: "app.traktor.decks." + (deckId+1) + ".tempo.base_bpm" }
   AppProperty { id: propTempo;         path: "app.traktor.decks." + (deckId+1) + ".tempo.tempo_for_display";      onValueChanged: tempoChangedTimer.restart() }
   AppProperty { id: propResultingKey;  path: "app.traktor.decks." + (deckId+1) + ".track.key.resulting.precise";  onValueChanged: keyChangedTimer.restart() }
@@ -33,6 +35,8 @@ Item {
     onValueChanged: {
       ApiClient.send("updateDeck/" + deckLetter, {
         elapsedTime: propElapsedTime.value,
+        nextCuePos: getNextCuePos(),
+        isPlaying: propIsPlaying.value,
       })
     }
   }
@@ -43,6 +47,16 @@ Item {
     onValueChanged: {
       ApiClient.send("updateDeck/" + deckLetter, {
         isSynced: propIsSynced.value,
+      })
+    }
+  }
+  AppProperty {
+    id: propIsKeyLockOn
+    path: "app.traktor.decks." + (deckId+1) + ".track.key.lock_enabled"
+
+    onValueChanged: {
+      ApiClient.send("updateDeck/" + deckLetter, {
+        isKeyLockOn: propIsKeyLockOn.value,
       })
     }
   }
@@ -63,12 +77,16 @@ Item {
         remixer:      propRemixer.value,
         key:          propKey.value,
         keyText:      propKeyText.value,
+        gridOffset:   propGridOffset.value/1000,
         trackLength:  propTrackLength.value,
         elapsedTime:  propElapsedTime.value,
+        nextCuePos:   getNextCuePos(),
         bpm:          propBpm.value,
         tempo:        propTempo.value,
         resultingKey: propResultingKey.value,
+        isPlaying:    propIsPlaying.value,
         isSynced:     propIsSynced.value,
+        isKeyLockOn:  propIsKeyLockOn.value,
       })
     }
   }
@@ -100,7 +118,12 @@ Item {
     onTriggered: {
       ApiClient.send("updateDeck/" + deckLetter, {
         elapsedTime: propElapsedTime.value,
+        nextCuePos: getNextCuePos(),
       })
     }
+  }
+
+  function getNextCuePos() {
+    return (propNextCuePoint.value == -1) ? null : propNextCuePoint.value/1000
   }
 }

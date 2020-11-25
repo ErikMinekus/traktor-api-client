@@ -4,7 +4,7 @@ By default data is sent to `http://localhost:8080`. You can change this in `ApiC
 
 The following endpoints are used:
 - `/deckLoaded/<deck>`: Called when a track is loaded into a deck.
-- `/updateDeck/<deck>`: Called when the BPM, key, elapsed time or sync status changes for a deck.
+- `/updateDeck/<deck>`: Called when certain values or state changes for a deck.
 - `/updateMasterClock`: Called when the master deck or BPM changes.
 
 ## How to install
