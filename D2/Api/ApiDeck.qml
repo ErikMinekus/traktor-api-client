@@ -6,31 +6,32 @@ Item {
   property int       deckId:  0
 
   readonly property string    deckLetter:  String.fromCharCode(65 + deckId)
+  readonly property string    pathPrefix:  "app.traktor.decks." + (deckId+1) + "."
 
-  AppProperty { path: "app.traktor.decks." + (deckId+1) + ".is_loaded";         onValueChanged: deckLoadedTimer.start() }
-  AppProperty { path: "app.traktor.decks." + (deckId+1) + ".is_loaded_signal";  onValueChanged: deckLoadedTimer.start() }
+  AppProperty { path: pathPrefix + "is_loaded";         onValueChanged: deckLoadedTimer.start() }
+  AppProperty { path: pathPrefix + "is_loaded_signal";  onValueChanged: deckLoadedTimer.start() }
 
-  AppProperty { id: propTitle;         path: "app.traktor.decks." + (deckId+1) + ".content.title" }
-  AppProperty { id: propArtist;        path: "app.traktor.decks." + (deckId+1) + ".content.artist" }
-  AppProperty { id: propAlbum;         path: "app.traktor.decks." + (deckId+1) + ".content.album" }
-  AppProperty { id: propGenre;         path: "app.traktor.decks." + (deckId+1) + ".content.genre" }
-  AppProperty { id: propComment;       path: "app.traktor.decks." + (deckId+1) + ".content.comment" }
-  AppProperty { id: propLabel;         path: "app.traktor.decks." + (deckId+1) + ".content.label" }
-  AppProperty { id: propMix;           path: "app.traktor.decks." + (deckId+1) + ".content.mix" }
-  AppProperty { id: propRemixer;       path: "app.traktor.decks." + (deckId+1) + ".content.remixer" }
-  AppProperty { id: propKey;           path: "app.traktor.decks." + (deckId+1) + ".content.musical_key" }
-  AppProperty { id: propKeyText;       path: "app.traktor.decks." + (deckId+1) + ".content.legacy_key" }
-  AppProperty { id: propGridOffset;    path: "app.traktor.decks." + (deckId+1) + ".content.grid_offset" }
-  AppProperty { id: propTrackLength;   path: "app.traktor.decks." + (deckId+1) + ".track.content.track_length" }
-  AppProperty { id: propElapsedTime;   path: "app.traktor.decks." + (deckId+1) + ".track.player.elapsed_time" }
-  AppProperty { id: propNextCuePoint;  path: "app.traktor.decks." + (deckId+1) + ".track.player.next_cue_point" }
-  AppProperty { id: propBpm;           path: "app.traktor.decks." + (deckId+1) + ".tempo.base_bpm" }
-  AppProperty { id: propTempo;         path: "app.traktor.decks." + (deckId+1) + ".tempo.tempo_for_display";      onValueChanged: tempoChangedTimer.restart() }
-  AppProperty { id: propResultingKey;  path: "app.traktor.decks." + (deckId+1) + ".track.key.resulting.precise";  onValueChanged: keyChangedTimer.restart() }
+  AppProperty { id: propTitle;         path: pathPrefix + "content.title" }
+  AppProperty { id: propArtist;        path: pathPrefix + "content.artist" }
+  AppProperty { id: propAlbum;         path: pathPrefix + "content.album" }
+  AppProperty { id: propGenre;         path: pathPrefix + "content.genre" }
+  AppProperty { id: propComment;       path: pathPrefix + "content.comment" }
+  AppProperty { id: propLabel;         path: pathPrefix + "content.label" }
+  AppProperty { id: propMix;           path: pathPrefix + "content.mix" }
+  AppProperty { id: propRemixer;       path: pathPrefix + "content.remixer" }
+  AppProperty { id: propKey;           path: pathPrefix + "content.musical_key" }
+  AppProperty { id: propKeyText;       path: pathPrefix + "content.legacy_key" }
+  AppProperty { id: propGridOffset;    path: pathPrefix + "content.grid_offset" }
+  AppProperty { id: propTrackLength;   path: pathPrefix + "track.content.track_length" }
+  AppProperty { id: propElapsedTime;   path: pathPrefix + "track.player.elapsed_time" }
+  AppProperty { id: propNextCuePoint;  path: pathPrefix + "track.player.next_cue_point" }
+  AppProperty { id: propBpm;           path: pathPrefix + "tempo.base_bpm" }
+  AppProperty { id: propTempo;         path: pathPrefix + "tempo.tempo_for_display";      onValueChanged: tempoChangedTimer.restart() }
+  AppProperty { id: propResultingKey;  path: pathPrefix + "track.key.resulting.precise";  onValueChanged: keyChangedTimer.restart() }
 
   AppProperty {
     id: propIsPlaying
-    path: "app.traktor.decks." + (deckId+1) + ".play"
+    path: pathPrefix + "play"
 
     onValueChanged: {
       ApiClient.send("updateDeck/" + deckLetter, {
@@ -42,7 +43,7 @@ Item {
   }
   AppProperty {
     id: propIsSynced
-    path: "app.traktor.decks." + (deckId+1) + ".sync.enabled"
+    path: pathPrefix + "sync.enabled"
 
     onValueChanged: {
       ApiClient.send("updateDeck/" + deckLetter, {
@@ -52,7 +53,7 @@ Item {
   }
   AppProperty {
     id: propIsKeyLockOn
-    path: "app.traktor.decks." + (deckId+1) + ".track.key.lock_enabled"
+    path: pathPrefix + "track.key.lock_enabled"
 
     onValueChanged: {
       ApiClient.send("updateDeck/" + deckLetter, {
