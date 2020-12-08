@@ -16,12 +16,14 @@ Item {
   AppProperty { id: propAlbum;         path: pathPrefix + "content.album" }
   AppProperty { id: propGenre;         path: pathPrefix + "content.genre" }
   AppProperty { id: propComment;       path: pathPrefix + "content.comment" }
+  AppProperty { id: propComment2;      path: pathPrefix + "content.comment2" }
   AppProperty { id: propLabel;         path: pathPrefix + "content.label" }
   AppProperty { id: propMix;           path: pathPrefix + "content.mix" }
   AppProperty { id: propRemixer;       path: pathPrefix + "content.remixer" }
   AppProperty { id: propKey;           path: pathPrefix + "content.musical_key" }
   AppProperty { id: propKeyText;       path: pathPrefix + "content.legacy_key" }
   AppProperty { id: propGridOffset;    path: pathPrefix + "content.grid_offset" }
+  AppProperty { id: propFilePath;      path: pathPrefix + "track.content.file_path" }
   AppProperty { id: propTrackLength;   path: pathPrefix + "track.content.track_length" }
   AppProperty { id: propElapsedTime;   path: pathPrefix + "track.player.elapsed_time" }
   AppProperty { id: propNextCuePoint;  path: pathPrefix + "track.player.next_cue_point" }
@@ -68,11 +70,13 @@ Item {
 
     onTriggered: {
       ApiClient.send("deckLoaded/" + deckLetter, {
+        filePath:     getFilePath(),
         title:        propTitle.value,
         artist:       propArtist.value,
         album:        propAlbum.value,
         genre:        propGenre.value,
         comment:      propComment.value,
+        comment2:     propComment2.value,
         label:        propLabel.value,
         mix:          propMix.value,
         remixer:      propRemixer.value,
@@ -124,6 +128,13 @@ Item {
     }
   }
 
+  function getFilePath() {
+    if (!propFilePath.value) return ""
+
+    return /^[A-Z]:\\/.test(propFilePath.value)
+      ? propFilePath.value
+      : "/Volumes/" + propFilePath.value.replace(/:/g, "/")
+  }
   function getNextCuePos() {
     return (propNextCuePoint.value == -1) ? null : propNextCuePoint.value/1000
   }

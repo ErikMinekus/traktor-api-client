@@ -1,4 +1,4 @@
-# API client to send live data from Traktor Pro to a web server
+# API client to send live track data from Traktor Pro to a web server
 
 By default data is sent to `http://localhost:8080`. You can change this in `ApiClient.js`.
 
