@@ -8,10 +8,50 @@ Item {
 
   readonly property string    pathPrefix:  "app.traktor.mixer.channels." + index + "."
 
-  AppProperty { id: propVolume;             path: pathPrefix + "volume";               onValueChanged: updateOnAirState() }
-  AppProperty { id: propXfaderAssignLeft;   path: pathPrefix + "xfader_assign.left";   onValueChanged: updateOnAirState() }
-  AppProperty { id: propXfaderAssignRight;  path: pathPrefix + "xfader_assign.right";  onValueChanged: updateOnAirState() }
-  AppProperty { id: propXfaderAdjust;       path: "app.traktor.mixer.xfader.adjust";   onValueChanged: updateOnAirState() }
+  AppProperty {
+    id: propVolume
+    path: pathPrefix + "volume"
+
+    onValueChanged: {
+      updateOnAirState()
+      ApiClient.send("updateChannel/" + index, {
+        volume: propVolume.value,
+      })
+    }
+  }
+  AppProperty {
+    id: propXfaderAssignLeft
+    path: pathPrefix + "xfader_assign.left"
+    
+    onValueChanged: {
+      updateOnAirState()
+      ApiClient.send("updateChannel/" + index, {
+        XfaderAssignLeft: propXfaderAssignLeft.value,
+      })
+    }
+  }
+  AppProperty {
+    id: propXfaderAssignRight
+    path: pathPrefix + "xfader_assign.right"
+    
+    onValueChanged: {
+      updateOnAirState()
+      ApiClient.send("updateChannel/" + index, {
+        XfaderAssignRight: propXfaderAssignRight.value,
+      })
+    }
+  }
+  AppProperty {
+    id: propXfaderAdjust
+    path: "app.traktor.mixer.xfader.adjust"
+    
+    onValueChanged: {
+      updateOnAirState()
+      ApiClient.send("updateChannel/" + index, {
+        XfaderAdjust: propXfaderAdjust.value,
+      })
+    }
+  }
 
   function updateOnAirState() {
     var isOnAir = propVolume.value > 0
