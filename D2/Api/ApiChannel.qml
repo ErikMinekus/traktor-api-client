@@ -5,6 +5,8 @@ import "ApiClient.js" as ApiClient
 Item {
   property int       index:       1
   property bool      onAirState:  null
+  property bool      assignLeft:  null
+  property bool      assignRight: null
 
   readonly property string    pathPrefix:  "app.traktor.mixer.channels." + index + "."
 
@@ -13,57 +15,69 @@ Item {
     path: pathPrefix + "volume"
 
     onValueChanged: {
-      updateOnAirState()
-      ApiClient.send("updateChannel/" + index, {
-        volume: propVolume.value,
-      })
+      updateChannel()
+      volumeChangedTimer.restart()
     }
   }
-  AppProperty {
-    id: propXfaderAssignLeft
-    path: pathPrefix + "xfader_assign.left"
-    
-    onValueChanged: {
-      updateOnAirState()
-      ApiClient.send("updateChannel/" + index, {
-        XfaderAssignLeft: propXfaderAssignLeft.value,
-      })
-    }
-  }
-  AppProperty {
-    id: propXfaderAssignRight
-    path: pathPrefix + "xfader_assign.right"
-    
-    onValueChanged: {
-      updateOnAirState()
-      ApiClient.send("updateChannel/" + index, {
-        XfaderAssignRight: propXfaderAssignRight.value,
-      })
-    }
-  }
+  AppProperty { id: propXfaderAssignLeft;   path: pathPrefix + "xfader_assign.left";   onValueChanged: updateChannel() }
+  AppProperty { id: propXfaderAssignRight;  path: pathPrefix + "xfader_assign.right";  onValueChanged: updateChannel() }
   AppProperty {
     id: propXfaderAdjust
     path: "app.traktor.mixer.xfader.adjust"
     
     onValueChanged: {
-      updateOnAirState()
+      updateChannel()
+      xfaderAdjustChangedTimer.restart()
+    }
+  }
+  Timer {
+    id: volumeChangedTimer
+    interval: 250
+
+    onTriggered: {
       ApiClient.send("updateChannel/" + index, {
-        XfaderAdjust: propXfaderAdjust.value,
+        volume: propVolume.value,
+      })
+    }
+  }
+  Timer {
+    id: xfaderAdjustChangedTimer
+    interval: 250
+
+    onTriggered: {
+      ApiClient.send("updateChannel/" + index, {
+        xfaderAdjust: propXfaderAdjust.value,
       })
     }
   }
 
-  function updateOnAirState() {
+  function updateChannel() {
     var isOnAir = propVolume.value > 0
       && ((!propXfaderAssignLeft.value && !propXfaderAssignRight.value)
         || (propXfaderAssignLeft.value && propXfaderAdjust.value < 1)
         || (propXfaderAssignRight.value && propXfaderAdjust.value > 0))
+    var changedValues = {}
+    var update = false
 
     if (isOnAir != onAirState) {
-      ApiClient.send("updateChannel/" + index, {
-        isOnAir: isOnAir,
-      })
-      onAirState = isOnAir
+      changedValues.isOnAir = isOnAir
+      update = true
     }
+    if (assignLeft != propXfaderAssignLeft.value) {
+      changedValues.xfaderAssignLeft = propXfaderAssignLeft.value
+      update = true
+    }
+    if (assignRight != propXfaderAssignRight.value) {
+      changedValues.xfaderAssignRight = propXfaderAssignRight.value
+      update = true
+    }
+
+    if (update)
+      ApiClient.send("updateChannel/" + index, changedValues)
+
+    onAirState = isOnAir
+    assignLeft = propXfaderAssignLeft.value
+    assignRight = propXfaderAssignRight.value
+
   }
 }
