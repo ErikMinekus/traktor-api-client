@@ -131,7 +131,7 @@ Item {
   function getFilePath() {
     if (!propFilePath.value) return ""
 
-    return /^[A-Z]:\\/.test(propFilePath.value)
+    return /^[A-Z]:\\/.test(propFilePath.value) || /^\//.test(propFilePath.value)
       ? propFilePath.value
       : "/Volumes/" + propFilePath.value.replace(/:/g, "/")
   }
